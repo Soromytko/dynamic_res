@@ -1,8 +1,8 @@
 [gd_scene load_steps=17 format=3 uid="uid://b0bccw85micf8"]
 
+[ext_resource type="Texture2D" uid="uid://cpypk63cwkm6q" path="res://dynamic_res/Textures/ground.jpg" id="2_0bsg8"]
 [ext_resource type="ArrayMesh" uid="uid://cs5jvqg0hglx4" path="res://dynamic_res/Models/Tree01/Tree01.obj" id="3_ha0ms"]
 [ext_resource type="Texture2D" uid="uid://dk3hu165dxh0g" path="res://dynamic_res/Models/Tree01/Foliage512.png" id="4_1u1h6"]
-[ext_resource type="Texture2D" uid="uid://cx1mk80x3ti4r" path="res://grass_lowpoly.png" id="4_2sypy"]
 [ext_resource type="Script" path="res://Scripts/FreeCamera.gd" id="4_aux6d"]
 [ext_resource type="Texture2D" uid="uid://l1r25wfxk10i" path="res://dynamic_res/Models/Tree01/bark.png" id="5_qbcup"]
 [ext_resource type="ArrayMesh" uid="uid://8k5knmqn88nj" path="res://dynamic_res/Models/Tree02/Tree03.obj" id="6_x4mg0"]
@@ -19,9 +19,11 @@ sky = SubResource("Sky_idaoi")
 [sub_resource type="PlaneMesh" id="PlaneMesh_tvy72"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_fsq1d"]
-albedo_texture = ExtResource("4_2sypy")
+albedo_color = Color(0.933333, 0.933333, 0.933333, 1)
+albedo_texture = ExtResource("2_0bsg8")
 metallic_specular = 0.0
-uv1_scale = Vector3(10, 10, 10)
+emission_enabled = true
+uv1_scale = Vector3(5, 5, 5)
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_ajx7k"]
 transparency = 2
@@ -56,7 +58,7 @@ environment = SubResource("Environment_74lpb")
 script = ExtResource("4_aux6d")
 
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
-transform = Transform3D(0.590492, -0.769882, 0.242074, 0.436433, 0.556932, 0.70665, -0.678856, -0.311622, 0.664866, 5, 15, 8.8)
+transform = Transform3D(0.590492, -0.769883, 0.242075, 0.436433, 0.556932, 0.706649, -0.678856, -0.311622, 0.664866, 5, 15, 8.8)
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="."]
 transform = Transform3D(100, 0, 0, 0, 1, 0, 0, 0, 100, 0, 0, 0)
