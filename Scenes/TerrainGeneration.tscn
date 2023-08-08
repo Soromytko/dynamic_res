@@ -1,0 +1,24 @@
+[gd_scene load_steps=5 format=3 uid="uid://cmmrmfmhhuytx"]
+
+[ext_resource type="PackedScene" uid="uid://c7jake3jwj74c" path="res://dynamic_res/Scenes/FreeCamera3D.tscn" id="1_32o2d"]
+[ext_resource type="Script" path="res://dynamic_res/Scripts/TerrainChunkManager.gd" id="2_dflq0"]
+[ext_resource type="PackedScene" uid="uid://b45lub0ydf0kq" path="res://dynamic_res/Scenes/TerrainChunk.tscn" id="3_ebmup"]
+
+[sub_resource type="BoxMesh" id="BoxMesh_hw1lh"]
+
+[node name="Node3D" type="Node3D"]
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0.533113, 0.846044, 0, -0.846044, 0.533113, 0, 0, 0)
+
+[node name="FreeCamera3D" parent="." instance=ExtResource("1_32o2d")]
+transform = Transform3D(0.791224, -0.100931, 0.60314, 0, 0.986286, 0.165048, -0.611527, -0.13059, 0.780373, 0, 15, 0)
+
+[node name="TerrainChunkManager" type="Node3D" parent="." node_paths=PackedStringArray("observer")]
+script = ExtResource("2_dflq0")
+chunk_size = Vector3i(2, 2, 2)
+observer = NodePath("../FreeCamera3D")
+chunk_scene = ExtResource("3_ebmup")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="."]
+mesh = SubResource("BoxMesh_hw1lh")

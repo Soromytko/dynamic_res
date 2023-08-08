@@ -1,0 +1,9 @@
+[gd_scene load_steps=3 format=3 uid="uid://b45lub0ydf0kq"]
+
+[ext_resource type="Script" path="res://dynamic_res/Scripts/TerrainChunk.gd" id="1_pjcuv"]
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_8okm1"]
+
+[node name="TerrainChunk" type="MeshInstance3D"]
+mesh = SubResource("PlaneMesh_8okm1")
+script = ExtResource("1_pjcuv")
