@@ -1,20 +1,13 @@
-[gd_scene load_steps=17 format=3 uid="uid://b0bccw85micf8"]
+[gd_scene load_steps=15 format=3 uid="uid://b0bccw85micf8"]
 
+[ext_resource type="PackedScene" uid="uid://c7jake3jwj74c" path="res://dynamic_res/Scenes/FreeCamera3D.tscn" id="1_rt7ek"]
 [ext_resource type="Texture2D" uid="uid://cpypk63cwkm6q" path="res://dynamic_res/Textures/ground.jpg" id="2_0bsg8"]
 [ext_resource type="ArrayMesh" uid="uid://cs5jvqg0hglx4" path="res://dynamic_res/Models/Tree01/Tree01.obj" id="3_ha0ms"]
 [ext_resource type="Texture2D" uid="uid://dk3hu165dxh0g" path="res://dynamic_res/Models/Tree01/Foliage512.png" id="4_1u1h6"]
-[ext_resource type="Script" path="res://Scripts/FreeCamera.gd" id="4_aux6d"]
 [ext_resource type="Texture2D" uid="uid://l1r25wfxk10i" path="res://dynamic_res/Models/Tree01/bark.png" id="5_qbcup"]
 [ext_resource type="ArrayMesh" uid="uid://8k5knmqn88nj" path="res://dynamic_res/Models/Tree02/Tree03.obj" id="6_x4mg0"]
 [ext_resource type="Texture2D" uid="uid://bdbthployfnri" path="res://dynamic_res/Models/Tree02/foliage_fir.png" id="7_x8fei"]
 [ext_resource type="Texture2D" uid="uid://dreaovkfjwl6j" path="res://dynamic_res/Models/Tree02/bark_fir.png" id="8_0dk33"]
-
-[sub_resource type="Sky" id="Sky_idaoi"]
-
-[sub_resource type="Environment" id="Environment_74lpb"]
-background_mode = 1
-background_color = Color(0.6, 0.729412, 1, 1)
-sky = SubResource("Sky_idaoi")
 
 [sub_resource type="PlaneMesh" id="PlaneMesh_tvy72"]
 
@@ -52,10 +45,7 @@ metallic_specular = 0.0
 
 [node name="Node3D" type="Node3D"]
 
-[node name="Camera3D" type="Camera3D" parent="."]
-transform = Transform3D(0.791224, -0.100931, 0.60314, 0, 0.986286, 0.165048, -0.611527, -0.13059, 0.780373, 5, 15, 8.8)
-environment = SubResource("Environment_74lpb")
-script = ExtResource("4_aux6d")
+[node name="FreeCamera3D" parent="." instance=ExtResource("1_rt7ek")]
 
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
 transform = Transform3D(0.590492, -0.769883, 0.242075, 0.436433, 0.556932, 0.706649, -0.678856, -0.311622, 0.664866, 5, 15, 8.8)
