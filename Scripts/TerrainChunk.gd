@@ -3,11 +3,6 @@ class_name TerrainChunk extends Node3D
 var width : int = 10
 var depth : int = 10
 
-var _mesh_instance : MeshInstance3D
-
-
-func _ready():
-	pass
 
 func generate_mesh(size : Vector3i, offset : Vector3i, noise : Noise):
 	width = size.x
@@ -44,8 +39,6 @@ func generate_mesh(size : Vector3i, offset : Vector3i, noise : Noise):
 		
 		
 func _build_mesh(vertices, indices):
-	_mesh_instance = $MeshInstance3D
-	
 	var normals = []
 	normals.resize(vertices.size())
 	for i in normals.size():
@@ -64,7 +57,6 @@ func _build_mesh(vertices, indices):
 	surface_tool.create_from(array_mesh, 0)
 	surface_tool.generate_normals()
 	
-	_mesh_instance.mesh = surface_tool.commit()
+	$MeshInstance3D.mesh = surface_tool.commit()
 	
-	return
 	$CollisionShape3D.shape = array_mesh.create_trimesh_shape()

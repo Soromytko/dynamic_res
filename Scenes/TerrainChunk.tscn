@@ -1,4 +1,4 @@
-[gd_scene load_steps=4 format=3 uid="uid://cews4xedq4er2"]
+[gd_scene load_steps=5 format=3 uid="uid://cews4xedq4er2"]
 
 [ext_resource type="Script" path="res://dynamic_res/Scripts/TerrainChunk.gd" id="1_pjcuv"]
 
@@ -7,10 +7,15 @@
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_sr5ie"]
 albedo_color = Color(0.552941, 0.564706, 0.192157, 1)
 
-[node name="TerrainChunk" type="Node3D"]
+[sub_resource type="ConcavePolygonShape3D" id="ConcavePolygonShape3D_urko4"]
+
+[node name="TerrainChunk" type="StaticBody3D"]
 script = ExtResource("1_pjcuv")
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="."]
 mesh = SubResource("PlaneMesh_j5cgy")
 skeleton = NodePath("")
 surface_material_override/0 = SubResource("StandardMaterial3D_sr5ie")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+shape = SubResource("ConcavePolygonShape3D_urko4")
