@@ -4,6 +4,14 @@ var width : int = 10
 var depth : int = 10
 
 
+func update_mesh(mesh):
+	$MeshInstance3D.mesh = mesh
+	
+	
+func update_shape(shape):
+	$CollisionShape3D.shape = shape
+
+
 func generate_mesh(size : Vector3i, offset : Vector3i, noise : Noise):
 	width = size.x
 	depth = size.z
