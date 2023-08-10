@@ -18,6 +18,7 @@ transform = Transform3D(0.791224, -0.100931, 0.60314, 0, 0.986286, 0.165048, -0.
 
 [node name="TerrainChunkManager" type="Node3D" parent="." node_paths=PackedStringArray("observer")]
 script = ExtResource("2_dflq0")
+observed_radius = 30.0
 observer = NodePath("../FreeCamera3D")
 chunk_scene = ExtResource("3_ebmup")
 

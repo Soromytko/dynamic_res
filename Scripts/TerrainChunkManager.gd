@@ -2,8 +2,8 @@ extends Node3D
 
 @export var terrain_size : Vector3i = Vector3i(100, 1, 100)
 @export var chunk_size : Vector3i = Vector3i(10, 10, 10)
-@export var observer : Node3D
 @export var observed_radius : float = 10
+@export var observer : Node3D
 @export var chunk_scene : PackedScene
 
 var _chunks : Dictionary = {}
@@ -16,7 +16,6 @@ var _task_ids = []
 func _ready():
 	var count : int = terrain_size.x * terrain_size.y * terrain_size.z
 	_noise.seed = hash("some")
-#	_chunks.resize(count)
 	
 
 func _process(delta):
@@ -29,9 +28,9 @@ func _process(delta):
 				var chunk = _chunks[chunk_pos]
 				chunk.queue_free()
 				_chunks.erase(chunk_pos)
-#		_do_create_chunks()
-		var task_id = WorkerThreadPool.add_task(_do_create_chunks, false, "")
-		_task_ids.append(task_id)
+		_do_create_chunks()
+#		var task_id = WorkerThreadPool.add_task(_do_create_chunks, false, "")
+#		_task_ids.append(task_id)
 	
 	for i in _task_ids.size():
 		var task = _task_ids[i]
@@ -108,16 +107,25 @@ func _create_chunk(sector : Vector3i) -> TerrainChunk:
 	return chunk
 	
 
+func _input(event):
+	if event is InputEventKey:
+		match event.keycode:
+			
+			KEY_CTRL: 
+				print("DFDFDF")
+				iiii = true
+			
+			
+var iiii = false
 func _do_create_chunks():
+	if iiii: return
 	var sector = _sector
 	var r = chunk_size * observed_radius
 	for x in range(sector.x - r.x, sector.x + r.x):
 		for z in range(sector.z - r.z, sector.z + r.z):
-			continue
 			if !_in_observed_radius(Vector3i(x, 0, z)): continue
 			var chunk_pos = Vector3i(x, 0, z)
 			if !_chunks.has(chunk_pos):
-				continue
 				var chunk = _create_chunk(chunk_pos)
 				_chunks[chunk_pos] = chunk
 
