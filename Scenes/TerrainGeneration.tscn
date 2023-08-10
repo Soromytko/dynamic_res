@@ -18,14 +18,14 @@ transform = Transform3D(0.791224, -0.100931, 0.60314, 0, 0.986286, 0.165048, -0.
 
 [node name="TerrainChunkManager" type="Node3D" parent="." node_paths=PackedStringArray("observer")]
 script = ExtResource("2_dflq0")
-observed_radius = 30.0
+observed_radius = 5.0
 observer = NodePath("../FreeCamera3D")
 chunk_scene = ExtResource("3_ebmup")
 
 [node name="Node3D" type="Node3D" parent="."]
 
 [node name="RigidBody3D" type="RigidBody3D" parent="Node3D"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 5.29591, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 30, 0)
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Node3D/RigidBody3D"]
 shape = SubResource("SphereShape3D_eoq1u")
