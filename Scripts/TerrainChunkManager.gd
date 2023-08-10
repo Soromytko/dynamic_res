@@ -118,27 +118,31 @@ func _create_array_mesh(vertices, indices, normals = []):
 	
 	
 func _generate_chunk_mesh_array(size : Vector3i, offset : Vector3i, noise : Noise):
-	var width_s = size.x + 1
-	var depth_s = size.z + 1
+	var smooth = 1
+#	Vertices
+	var vertex_count : Vector3i = size * smooth + Vector3i.ONE
+	var vertex_step : Vector3 = Vector3(size) / (Vector3(vertex_count) - Vector3.ONE)
 	var vertices = []
-	vertices.resize(width_s * depth_s)
-	for x in width_s:
-		for z in depth_s:
-			var w = x - size.x / 2.0
-			var h : float = noise.get_noise_2d(x + offset.x, z + offset.z) * 15
-			var d = z - size.z / 2.0
-			vertices[x * width_s + z] = Vector3(w, h, d)
+	vertices.resize(vertex_count.x * vertex_count.z)
+	for x in vertex_count.x:
+		for z in vertex_count.x:
+			var w = vertex_step.x * x - size.x / 2.0
+			var h : float = noise.get_noise_2d(x+ offset.x, z + offset.z) * 15
+			var d = vertex_step.z * z - size.z / 2.0
+			vertices[x * vertex_count.x + z] = Vector3(w, h, d)
+#	Triangles
+	var triangle_count : Vector3i = size * smooth
 	var indices = []
-	indices.resize(size.x * size.z * 6)
+	indices.resize(triangle_count.x * triangle_count.z * 6)
 	var vert : int = 0
 	var ind : int = 0
-	for x in size.x:
-		for z in size.z:
+	for x in triangle_count.x:
+		for z in triangle_count.z:
 			indices[ind + 0] = vert + 0
-			indices[ind + 1] = vert + depth_s
+			indices[ind + 1] = vert + triangle_count.z + 1
 			indices[ind + 2] = vert + 1
-			indices[ind + 3] = vert + depth_s
-			indices[ind + 4] = vert + depth_s + 1
+			indices[ind + 3] = vert + triangle_count.z + 1
+			indices[ind + 4] = vert + triangle_count.z + 2
 			indices[ind + 5] = vert + 1
 			vert += 1
 			ind += 6
