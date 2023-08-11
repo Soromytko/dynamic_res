@@ -16,6 +16,8 @@ class Segment:
 	func _init(data_size : int):
 		data.resize(data_size)
 	
+var count : int:
+	get: return count
 
 var _segment_start : Segment
 var _segment_end : Segment
@@ -26,8 +28,6 @@ var _end_segment_index : int = 0
 var _mutex : Mutex = Mutex.new()
 
 const SEGMENT_DATA_SIZE = 16
-
-var count : int = 0
 
 
 func _init():
@@ -69,8 +69,8 @@ func pop():
 		_start_segment_index = 0
 	else:
 		_start_segment_index = next_index
-	
-	count -= 1
+		
+	count -= 1	
 		
 	_mutex.unlock()
 		

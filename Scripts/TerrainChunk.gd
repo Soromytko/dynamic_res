@@ -4,24 +4,13 @@ var width : int = 10
 var depth : int = 10
 
 
-var _need_mesh = false
-var _mesh
-
 func update_mesh(mesh):
-	_mesh = mesh
-	_need_mesh = true
-#	$MeshInstance3D.mesh = mesh
+	$MeshInstance3D.mesh = mesh
 	
 	
 func update_shape(shape):
 	$CollisionShape3D.shape = shape
 
-
-func _process(delta):
-	if _need_mesh:
-		$MeshInstance3D.mesh = _mesh
-		_need_mesh = false
-		
 
 func generate_mesh(size : Vector3i, offset : Vector3i, noise : Noise):
 	width = size.x
