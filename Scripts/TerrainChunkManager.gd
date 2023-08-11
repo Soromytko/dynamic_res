@@ -38,15 +38,15 @@ func _process(delta):
 	var sector = _get_sector_by_position(Vector3(_observer_pos.x, 0, _observer_pos.z))
 	if sector != _sector:
 		_sector = sector
-		for chunk_pos in _chunks.keys():
-			if !_in_observed_radius(chunk_pos, _observer_pos, observed_radius):
-				var chunk = _chunks[chunk_pos]
-				chunk.queue_free()
-				_chunks.erase(chunk_pos)
-#		_do_create_chunks()
-		var task_id = WorkerThreadPool.add_task(_do_create_chunks, true, "")
-		task_ids.append(task_id)
-		
+#		for chunk_pos in _chunks.keys():
+#			if !_in_observed_radius(chunk_pos, _observer_pos, observed_radius):
+#				var chunk = _chunks[chunk_pos]
+#				chunk.queue_free()
+#				_chunks.erase(chunk_pos)
+		_do_create_chunks()
+#		var task_id = WorkerThreadPool.add_task(_do_create_chunks, true, "")
+#		task_ids.append(task_id)
+
 #	print(task_ids.size(), " chunks ", _chunks.keys().size())
 	var i = 0
 	while i < task_ids.size():
@@ -57,30 +57,49 @@ func _process(delta):
 			i += 1
 		
 #		WorkerThreadPool.task
+
+#	if task_ids.size() != 0: return
 	
+	print(_queue.count)
 	var prepared_chunk_data = _queue.pop()
 	if prepared_chunk_data != null:
 		if _in_observed_radius(prepared_chunk_data.sector, _observer_pos, observed_radius):
 			var chunk = chunk_scene.instantiate()
-			_chunks[prepared_chunk_data.sector] = chunk
-			chunk.update_mesh(prepared_chunk_data.mesh)
-			chunk.update_shape(prepared_chunk_data.shape)
 			
 			add_child(chunk)
+			chunk.update_mesh(prepared_chunk_data.mesh)
+			chunk.update_shape(prepared_chunk_data.shape)
 			chunk.global_position = prepared_chunk_data.sector * chunk_size
 			
-
+			_chunks[prepared_chunk_data.sector] = chunk
+			
+			
+func _input(event):
+	if Input.is_action_just_pressed("Alt"):
+		print("ALT")
+		for child in get_children():
+			child.queue_free()
+			_chunks.clear()
+		_sector = Vector3.ONE
+						
+						
 func _do_create_chunks():
+	print("DDDD")
 	var sector = _sector
-	var observer_pos = _observer_pos
-	var r = chunk_size * observed_radius
+	var observer_pos : Vector3 = _observer_pos
+	var r = Vector3i.ONE * observed_radius
+	print(sector.x - r.x, " ", sector.x + r.x)
 	for x in range(sector.x - r.x, sector.x + r.x):
 		for z in range(sector.z - r.z, sector.z + r.z):
 			if !_in_observed_radius(Vector3i(x, 0, z), observer_pos, observed_radius): continue
 			var chunk_pos = Vector3i(x, 0, z)
 			if !_chunks.has(chunk_pos):
-				var prepared_chunk_data = _create_chunk_data(chunk_pos)
-				_queue.push(prepared_chunk_data)
+				var f = func():
+					var prepared_chunk_data = _create_chunk_data(chunk_pos)
+					_queue.push(prepared_chunk_data)
+				var task_id = WorkerThreadPool.add_task(f, true, "")
+				task_ids.append(task_id)
+#				f.call()
 				
 				
 func _create_chunk_data(sector : Vector3i) -> PreparedChunkData:
@@ -91,12 +110,6 @@ func _create_chunk_data(sector : Vector3i) -> PreparedChunkData:
 	var chunk_shape = chunk_array_mesh.create_trimesh_shape()
 	var chunk_data = PreparedChunkData.new(sector, chunk_mesh, chunk_shape)
 	return chunk_data
-#	var chunk : TerrainChunk = chunk_scene.instantiate()
-#	chunk.global_position = chunk_offset
-#	chunk.update_mesh(chunk_surface_tool.commit())
-#	chunk.update_shape(chunk_array_mesh.create_trimesh_shape())
-#	add_child(chunk)
-#	return chunk
 	
 	
 func _create_surface_tool(array_mesh, is_generate_normals = true):
@@ -106,7 +119,7 @@ func _create_surface_tool(array_mesh, is_generate_normals = true):
 	return surface_tool
 
 
-func _create_array_mesh(vertices, indices, normals = []):
+func _create_array_mesh(vertices, indices, normals):
 	var mesh_data = []
 	mesh_data.resize(ArrayMesh.ARRAY_MAX)
 	mesh_data[ArrayMesh.ARRAY_VERTEX] = PackedVector3Array(vertices)
