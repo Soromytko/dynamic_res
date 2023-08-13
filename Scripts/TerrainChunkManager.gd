@@ -50,7 +50,28 @@ func _exit_tree():
 	_thread.wait_to_finish()
 	
 
+var b = false
+func _create_all_chunks(count : int):
+	if !b:
+		for x in count:
+			for z in count:
+				var chunk_sector = Vector3i(x, 0, z)
+				var chunk = chunk_scene.instantiate()
+				chunk.size = chunk_size
+				chunk.sector = chunk_sector
+				chunk.offset = chunk_sector * chunk_size
+				add_child(chunk)
+				chunk.global_position = chunk_sector * chunk_size
+				_chunks[chunk_sector] = chunk
+				var distance = (chunk_sector).length()
+				var level_del : int = round(distance * 10)
+				chunk.start_generation(_noise, level_del)
+		b = true
+	
+	
 func _process(delta):
+	_create_all_chunks(20)
+	return
 	_observer_pos = observer.global_position
 	var sector = _get_sector_by_position(Vector3(_observer_pos.x, 0, _observer_pos.z))
 	if sector != _sector:
@@ -74,7 +95,7 @@ func _process(delta):
 			i += 1
 		
 #		WorkerThreadPool.task
-	print(_generation_queue.count)
+#	print(_generation_queue.count)
 	
 	var prepared_chunk_data = _prepared_queue.pop()
 	if prepared_chunk_data != null:
@@ -107,13 +128,25 @@ func _do_create_chunks():
 		for z in range(sector.z - r.z, sector.z + r.z):
 			if !_in_observed_radius(Vector3i(x, 0, z), observer_pos, observed_radius): continue
 			var chunk_pos = Vector3i(x, 0, z)
-			if !_chunks.has(chunk_pos):
-				var generation_data = GenerationChunkData.new(chunk_pos)
-				_generation_queue.push(generation_data)
-				if !_thread.is_alive():
-					_thread.wait_to_finish()
-					_thread.start(_generating)
-				else: print("already start")
+			var chunk : TerrainChunk = _chunks[chunk_pos] if _chunks.has(chunk_pos) else null
+			if chunk == null:
+				continue
+				chunk = chunk_scene.instantiate()
+				chunk.size = chunk_size
+				chunk.sector = chunk_pos
+				chunk.offset = chunk_pos * chunk_size
+				add_child(chunk)
+				chunk.global_position = chunk_pos * chunk_size
+				_chunks[chunk_pos] = chunk
+			var distance = (chunk_pos - _sector).length()
+			var level_del : int = round(distance * 10)
+			chunk.start_generation(_noise, level_del)
+#				var generation_data = GenerationChunkData.new(chunk_pos)
+#				_generation_queue.push(generation_data)
+#				if !_thread.is_alive():
+#					_thread.wait_to_finish()
+#					_thread.start(_generating)
+#				else: print("already start")
 
 				
 				
