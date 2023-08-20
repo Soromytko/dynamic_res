@@ -1,9 +1,16 @@
-[gd_scene load_steps=7 format=3 uid="uid://dqq1htsrpx51d"]
+[gd_scene load_steps=14 format=3 uid="uid://dqq1htsrpx51d"]
 
 [ext_resource type="PackedScene" uid="uid://c7jake3jwj74c" path="res://dynamic_res/Scenes/FreeCamera3D.tscn" id="1_32o2d"]
 [ext_resource type="Script" path="res://dynamic_res/Scripts/TerrainChunkManager.gd" id="2_dflq0"]
 [ext_resource type="PackedScene" uid="uid://cews4xedq4er2" path="res://dynamic_res/Scenes/TerrainChunk.tscn" id="3_ebmup"]
-[ext_resource type="PackedScene" uid="uid://bqensq7e1h7cs" path="res://dynamic_res/Scenes/Tree03.tscn" id="4_0pmsk"]
+[ext_resource type="PackedScene" uid="uid://bwblncqk8pnon" path="res://dynamic_res/Scenes/Tree05.tscn" id="5_3jp6s"]
+[ext_resource type="PackedScene" uid="uid://sstdsce0gin0" path="res://dynamic_res/Scenes/Tree04.tscn" id="5_3mrif"]
+[ext_resource type="PackedScene" uid="uid://cp5mnndsjiu0x" path="res://dynamic_res/Scenes/Tree06.tscn" id="6_dkp30"]
+[ext_resource type="PackedScene" uid="uid://d356vdoahaxxa" path="res://dynamic_res/Scenes/Tree07.tscn" id="7_titch"]
+[ext_resource type="PackedScene" uid="uid://cefoujnac15t6" path="res://dynamic_res/Scenes/Tree08.tscn" id="8_p6v2n"]
+[ext_resource type="PackedScene" uid="uid://doksd18veu37o" path="res://dynamic_res/Scenes/Tree09.tscn" id="9_ot4bg"]
+[ext_resource type="PackedScene" uid="uid://bgw1mx4ut50uc" path="res://dynamic_res/Scenes/Tree10.tscn" id="10_6aytf"]
+[ext_resource type="PackedScene" uid="uid://5em3k6k3vmar" path="res://dynamic_res/Scenes/Grass01.tscn" id="11_vclpm"]
 
 [sub_resource type="SphereShape3D" id="SphereShape3D_eoq1u"]
 
@@ -25,15 +32,18 @@ observed_radius = 5.0
 observer = NodePath("../FreeCamera3D")
 chunk_scene = ExtResource("3_ebmup")
 cell_size = 6
-trees = Array[PackedScene]([ExtResource("4_0pmsk")])
+trees = Array[PackedScene]([ExtResource("5_3mrif"), ExtResource("5_3jp6s"), ExtResource("6_dkp30"), ExtResource("7_titch"), ExtResource("8_p6v2n"), ExtResource("9_ot4bg"), ExtResource("10_6aytf")])
 
 [node name="Node3D" type="Node3D" parent="."]
 
 [node name="RigidBody3D" type="RigidBody3D" parent="Node3D"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 30, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 16.0065, 30, 21.3818)
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Node3D/RigidBody3D"]
 shape = SubResource("SphereShape3D_eoq1u")
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="Node3D/RigidBody3D"]
 mesh = SubResource("SphereMesh_8wjsc")
+
+[node name="Grass01" parent="." instance=ExtResource("11_vclpm")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.65844, -5.96046e-08, 4.74414)

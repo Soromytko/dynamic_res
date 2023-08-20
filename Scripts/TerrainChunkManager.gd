@@ -16,15 +16,18 @@ var _generation_queue : ConcurrentQueue = ConcurrentQueue.new()
 
 var _thread : Thread = Thread.new()
 
-var task_ids = []
+@export var cell_size : int = 1
+@export var trees : Array[PackedScene]
 
 class GenerationChunkData:
 	var _sector : Vector3i
+	var _level : int
 	
-	func _init(sector : Vector3i):
+	func _init(sector : Vector3i, level : int):
 		_sector = sector
 		
 	func get_sector(): return _sector
+	func get_level(): return _level
 
 
 class PreparedChunkData:
@@ -49,57 +52,45 @@ func _exit_tree():
 	return
 	_thread.wait_to_finish()
 	
+	
+var b = 0
+func _create_all_chunks(count):
+	if b != 0: return
+	b = 1
+	for x in count:
+		for z in count:
+			var chunk_pos = Vector3i(x, 0, z)
+			var generation_data = GenerationChunkData.new(chunk_pos, 1)
+			_generation_queue.push(generation_data)
+			if !_thread.is_alive():
+				_thread.wait_to_finish()
+				_thread.start(_generating)
+	var rng = RandomNumberGenerator.new()
+	for i in 1000:
+		var x_rand = rng.randf_range(0, count * chunk_size.x)
+		var z_rand = rng.randf_range(0, count * chunk_size.z)
+		var noise_vector = Vector2(x_rand, z_rand)
+		var y : float = _noise.get_noise_2dv(noise_vector / cell_size) * 10
+		y *= y
+		
+		var tree = trees[rng.randi_range(0, trees.size() - 1)].instantiate()
+		add_child(tree)
+		tree.global_position = Vector3(x_rand, y, z_rand)
 
-var b = false
-func _create_all_chunks(count : int):
-	if !b:
-		for x in count:
-			for z in count:
-				var chunk_sector = Vector3i(x, 0, z)
-				var chunk = chunk_scene.instantiate()
-				chunk.size = chunk_size
-				chunk.sector = chunk_sector
-				chunk.offset = chunk_sector * chunk_size
-				add_child(chunk)
-				chunk.global_position = chunk_sector * chunk_size
-				_chunks[chunk_sector] = chunk
-				var distance = (chunk_sector).length()
-				var level_del : int = round(distance * 10)
-				chunk.start_generation(_noise, level_del)
-		b = true
-	
-	
+
 func _process(delta):
-	_create_all_chunks(20)
-	return
+	_create_all_chunks(10)
 	_observer_pos = observer.global_position
 	var sector = _get_sector_by_position(Vector3(_observer_pos.x, 0, _observer_pos.z))
 	if sector != _sector:
 		_sector = sector
-#		for chunk_pos in _chunks.keys():
-#			if !_in_observed_radius(chunk_pos, _observer_pos, observed_radius):
-#				var chunk = _chunks[chunk_pos]
-#				chunk.queue_free()
-#				_chunks.erase(chunk_pos)
-		_do_create_chunks()
-#		var task_id = WorkerThreadPool.add_task(_do_create_chunks, true, "")
-#		task_ids.append(task_id)
-		
-#	print(task_ids.size(), " chunks ", _chunks.keys().size())
-	var i = 0
-	while i < task_ids.size():
-		var task = task_ids[i]
-		if WorkerThreadPool.is_task_completed(task):
-			task_ids.remove_at(i)
-		else:
-			i += 1
-		
-#		WorkerThreadPool.task
-#	print(_generation_queue.count)
+	_process_prepared_chunks()
 	
+	
+func _process_prepared_chunks():
 	var prepared_chunk_data = _prepared_queue.pop()
 	if prepared_chunk_data != null:
-		if _in_observed_radius(prepared_chunk_data.sector, _observer_pos, observed_radius):
+		if _in_observed_radius(prepared_chunk_data.sector, _observer_pos, observed_radius) || true:
 			var chunk = chunk_scene.instantiate()
 			_chunks[prepared_chunk_data.sector] = chunk
 			chunk.update_mesh(prepared_chunk_data.mesh)
@@ -107,17 +98,17 @@ func _process(delta):
 			
 			add_child(chunk)
 			chunk.global_position = prepared_chunk_data.sector * chunk_size
-			
+
 
 func _generating():
-	print("END")
+	print("START GENERATION")
 	while true:
-		var data = _generation_queue.pop()
+		var data : GenerationChunkData = _generation_queue.pop()
 		if data != null:
-			var prepared_chunk_data = _create_chunk_data(data.get_sector())
+			var prepared_chunk_data = _create_chunk_data(data.get_sector(), data.get_level())
 			_prepared_queue.push(prepared_chunk_data)
 		else: break
-	print("END")
+	print("END GENERATION")
 
 
 func _do_create_chunks():
@@ -128,29 +119,19 @@ func _do_create_chunks():
 		for z in range(sector.z - r.z, sector.z + r.z):
 			if !_in_observed_radius(Vector3i(x, 0, z), observer_pos, observed_radius): continue
 			var chunk_pos = Vector3i(x, 0, z)
-			var chunk : TerrainChunk = _chunks[chunk_pos] if _chunks.has(chunk_pos) else null
-			if chunk == null:
-				continue
-				chunk = chunk_scene.instantiate()
-				chunk.size = chunk_size
-				chunk.sector = chunk_pos
-				chunk.offset = chunk_pos * chunk_size
-				add_child(chunk)
-				chunk.global_position = chunk_pos * chunk_size
-				_chunks[chunk_pos] = chunk
-			var distance = (chunk_pos - _sector).length()
-			var level_del : int = round(distance * 10)
-			chunk.start_generation(_noise, level_del)
-#				var generation_data = GenerationChunkData.new(chunk_pos)
-#				_generation_queue.push(generation_data)
-#				if !_thread.is_alive():
-#					_thread.wait_to_finish()
-#					_thread.start(_generating)
-#				else: print("already start")
-
+			var chunk = _chunks[chunk_pos] if _chunks.has(chunk_pos) else null
+			if chunk == null: continue
+			var distance = (_sector - chunk_pos).length()
+			var level : int = round(distance * 10)
+			var generation_data = GenerationChunkData.new(chunk_pos, level)
+			_generation_queue.push(generation_data)
+			if !_thread.is_alive():
+				_thread.wait_to_finish()
+				_thread.start(_generating)
+			else: print("already start")
 				
 				
-func _create_chunk_data(sector : Vector3i) -> PreparedChunkData:
+func _create_chunk_data(sector : Vector3i, level : int = 0) -> PreparedChunkData:
 	var chunk_offset = sector * chunk_size
 	var chunk_array_mesh = _generate_chunk_mesh_array(chunk_size, chunk_offset, _noise)
 	var chunk_surface_tool = _create_surface_tool(chunk_array_mesh)
@@ -185,20 +166,23 @@ func _create_array_mesh(vertices, indices, normals = []):
 	
 	
 func _generate_chunk_mesh_array(size : Vector3i, offset : Vector3i, noise : Noise):
-	var smooth = 1
+	var detalization_level = 0
+	var smooth : Vector3i = size - Vector3i.ONE * detalization_level
 #	Vertices
-	var vertex_count : Vector3i = size * smooth + Vector3i.ONE
+	var vertex_count : Vector3i = smooth + Vector3i.ONE
 	var vertex_step : Vector3 = Vector3(size) / (Vector3(vertex_count) - Vector3.ONE)
 	var vertices = []
 	vertices.resize(vertex_count.x * vertex_count.z)
 	for x in vertex_count.x:
 		for z in vertex_count.x:
-			var w = vertex_step.x * x - size.x / 2.0
-			var h : float = noise.get_noise_2d(x+ offset.x, z + offset.z) * 15
-			var d = vertex_step.z * z - size.z / 2.0
+			var w = vertex_step.x * x
+			var d = vertex_step.z * z
+			var noise_vector = Vector2(w, d) + Vector2(offset.x, offset.z)
+			var h : float = noise.get_noise_2dv(noise_vector / cell_size) * 10
+			h *= h
 			vertices[x * vertex_count.x + z] = Vector3(w, h, d)
 #	Triangles
-	var triangle_count : Vector3i = size * smooth
+	var triangle_count : Vector3i = smooth
 	var indices = []
 	indices.resize(triangle_count.x * triangle_count.z * 6)
 	var vert : int = 0
@@ -214,8 +198,10 @@ func _generate_chunk_mesh_array(size : Vector3i, offset : Vector3i, noise : Nois
 			vert += 1
 			ind += 6
 		vert += 1
+#	Normals
 	var normals = []
 	normals.resize(vertices.size())
+
 	return _create_array_mesh(vertices, indices, normals)
 
 
