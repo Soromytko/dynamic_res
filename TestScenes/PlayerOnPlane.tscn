@@ -1,9 +1,13 @@
-[gd_scene load_steps=5 format=3 uid="uid://b2mc5iamf2ues"]
+[gd_scene load_steps=7 format=3 uid="uid://b2mc5iamf2ues"]
 
 [ext_resource type="PackedScene" uid="uid://bq87e5wf0o3k0" path="res://Prefabs/Camera.tscn" id="2_16g2k"]
 [ext_resource type="PackedScene" uid="uid://b1uwudfm0vnol" path="res://Prefabs/Player.tscn" id="2_d0q4b"]
+[ext_resource type="Texture2D" uid="uid://cpypk63cwkm6q" path="res://dynamic_res/Textures/ground.jpg" id="3_5bigc"]
 
 [sub_resource type="PlaneMesh" id="PlaneMesh_8e4f7"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_5jhxw"]
+albedo_texture = ExtResource("3_5bigc")
 
 [sub_resource type="HeightMapShape3D" id="HeightMapShape3D_t72rg"]
 
@@ -19,6 +23,7 @@ camera = NodePath("../CameraController")
 [node name="MeshInstance3D" type="MeshInstance3D" parent="Plane"]
 transform = Transform3D(10, 0, 0, 0, 10, 0, 0, 0, 10, 0, 0, 0)
 mesh = SubResource("PlaneMesh_8e4f7")
+surface_material_override/0 = SubResource("StandardMaterial3D_5jhxw")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Plane"]
 transform = Transform3D(20, 0, 0, 0, 20, 0, 0, 0, 20, 0, 0, 0)
