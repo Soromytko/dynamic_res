@@ -1,6 +1,5 @@
-[gd_scene load_steps=24 format=3 uid="uid://dqq1htsrpx51d"]
+[gd_scene load_steps=25 format=3 uid="uid://dqq1htsrpx51d"]
 
-[ext_resource type="PackedScene" uid="uid://c7jake3jwj74c" path="res://dynamic_res/Scenes/FreeCamera3D.tscn" id="1_32o2d"]
 [ext_resource type="Script" path="res://dynamic_res/Scripts/TerrainChunkManager.gd" id="2_dflq0"]
 [ext_resource type="PackedScene" uid="uid://cews4xedq4er2" path="res://dynamic_res/Scenes/TerrainChunk.tscn" id="3_ebmup"]
 [ext_resource type="PackedScene" uid="uid://bwblncqk8pnon" path="res://dynamic_res/Scenes/Tree05.tscn" id="5_3jp6s"]
@@ -21,6 +20,8 @@
 [ext_resource type="PackedScene" uid="uid://dojxum8e1rcnb" path="res://dynamic_res/Scenes/Grass07.tscn" id="19_32yoc"]
 [ext_resource type="PackedScene" uid="uid://bg3rr32787wi8" path="res://dynamic_res/Scenes/Grass08.tscn" id="20_kl2sd"]
 [ext_resource type="PackedScene" uid="uid://ce385hvcejxva" path="res://dynamic_res/Scenes/Grass09.tscn" id="21_26124"]
+[ext_resource type="PackedScene" uid="uid://b1uwudfm0vnol" path="res://Prefabs/Player.tscn" id="21_y5ry1"]
+[ext_resource type="PackedScene" uid="uid://bq87e5wf0o3k0" path="res://Prefabs/Camera.tscn" id="22_r2che"]
 
 [sub_resource type="SphereShape3D" id="SphereShape3D_eoq1u"]
 
@@ -32,15 +33,11 @@
 transform = Transform3D(1, 0, 0, 0, 0.533113, 0.846044, 0, -0.846044, 0.533113, 0, 0, 0)
 shadow_enabled = true
 
-[node name="FreeCamera3D" parent="." instance=ExtResource("1_32o2d")]
-transform = Transform3D(0.791224, -0.100931, 0.60314, 0, 0.986286, 0.165048, -0.611527, -0.13059, 0.780373, 0, 15, 0)
-visible = false
-
 [node name="TerrainChunkManager" type="Node3D" parent="." node_paths=PackedStringArray("observer")]
 script = ExtResource("2_dflq0")
 chunk_size = Vector3i(32, 32, 32)
 observed_radius = 5.0
-observer = NodePath("../FreeCamera3D")
+observer = NodePath("../CameraController")
 chunk_scene = ExtResource("3_ebmup")
 cell_size = 6
 trees = Array[PackedScene]([ExtResource("5_3mrif"), ExtResource("5_3jp6s"), ExtResource("6_dkp30"), ExtResource("7_titch"), ExtResource("8_p6v2n"), ExtResource("9_ot4bg"), ExtResource("10_6aytf")])
@@ -57,3 +54,9 @@ shape = SubResource("SphereShape3D_eoq1u")
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="Node3D/RigidBody3D"]
 mesh = SubResource("SphereMesh_8wjsc")
+
+[node name="Player" parent="." node_paths=PackedStringArray("camera") instance=ExtResource("21_y5ry1")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9.22484, 0, 7.85219)
+camera = NodePath("../CameraController")
+
+[node name="CameraController" parent="." instance=ExtResource("22_r2che")]

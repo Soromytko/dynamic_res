@@ -82,15 +82,18 @@ func _create_all_chunks(count):
 	var inst_data = [
 		{
 			scenes = trees,
-			count = 1000,
+			count = 500,
+			scale = 2.5,
 		},
 		{
 			scenes = bushes,
-			count = 1000,
+			count = 3000,
+			scale = 1,
 		},
 		{
 			scenes = grass,
-			count = 80000,
+			count = 800,
+			scale = 1,
 		}
 	]
 	
@@ -103,7 +106,7 @@ func _create_all_chunks(count):
 			var instance = scenes.pick_random().instantiate()
 			add_child(instance)
 			instance.global_position = rand_pos
-	return
+			instance.scale *= item.scale
 			
 
 
