@@ -18,6 +18,9 @@ var _thread : Thread = Thread.new()
 
 @export var cell_size : int = 1
 @export var trees : Array[PackedScene]
+@export var bushes : Array[PackedScene]
+@export var grass : Array[PackedScene]
+
 
 class GenerationChunkData:
 	var _sector : Vector3i
@@ -66,16 +69,42 @@ func _create_all_chunks(count):
 				_thread.wait_to_finish()
 				_thread.start(_generating)
 	var rng = RandomNumberGenerator.new()
-	for i in 1000:
+	
+	var get_random_point = func():
 		var x_rand = rng.randf_range(0, count * chunk_size.x)
 		var z_rand = rng.randf_range(0, count * chunk_size.z)
 		var noise_vector = Vector2(x_rand, z_rand)
 		var y : float = _noise.get_noise_2dv(noise_vector / cell_size) * 10
 		y *= y
+		return Vector3(x_rand, y, z_rand)
 		
-		var tree = trees[rng.randi_range(0, trees.size() - 1)].instantiate()
-		add_child(tree)
-		tree.global_position = Vector3(x_rand, y, z_rand)
+		
+	var inst_data = [
+		{
+			scenes = trees,
+			count = 1000,
+		},
+		{
+			scenes = bushes,
+			count = 1000,
+		},
+		{
+			scenes = grass,
+			count = 3000,
+		}
+	]
+	
+	for item in inst_data:
+		var scenes = item.scenes
+		var c = item.count
+		for i in c:
+			var rand_pos = get_random_point.call()
+			if scenes.size() == 0: break
+			var instance = scenes.pick_random().instantiate()
+			add_child(instance)
+			instance.global_position = rand_pos
+	return
+			
 
 
 func _process(delta):
