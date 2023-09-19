@@ -90,7 +90,7 @@ func _create_all_chunks(count):
 		},
 		{
 			scenes = grass,
-			count = 3000,
+			count = 80000,
 		}
 	]
 	
