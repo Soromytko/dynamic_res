@@ -186,12 +186,30 @@ func _create_surface_tool(array_mesh, is_generate_normals = true):
 	return surface_tool
 
 
+
+func _create_uv(vertices):
+	var uv : Array[Vector2]
+	uv.resize(vertices.size())
+	
+	var tile : float = 5
+
+	for i in vertices.size():
+		var u = vertices[i].x / chunk_size.x * tile
+		var v = vertices[i].z / chunk_size.z * tile
+		uv[i] = Vector2(u, v)
+	
+	return uv
+	
+
 func _create_array_mesh(vertices, indices, normals = []):
+	var uv = _create_uv(vertices)
+	
 	var mesh_data = []
 	mesh_data.resize(ArrayMesh.ARRAY_MAX)
 	mesh_data[ArrayMesh.ARRAY_VERTEX] = PackedVector3Array(vertices)
 	mesh_data[ArrayMesh.ARRAY_INDEX] = PackedInt32Array(indices)
 	mesh_data[ArrayMesh.ARRAY_NORMAL] = PackedVector3Array(normals);
+	mesh_data[ArrayMesh.ARRAY_TEX_UV] = PackedVector2Array(uv)
 	var array_mesh = ArrayMesh.new()
 	array_mesh.add_surface_from_arrays(Mesh.PRIMITIVE_TRIANGLES, mesh_data)
 	return array_mesh
